@@ -1,0 +1,5 @@
+phase,sourcevmname,targetvmname,label,networkname,onvault,perfoption
+1,WinSrv2019-2,WinSrv2019-2-rec,phase1,avtest,true,StorageOptimized
+1,WinSrv2019-3,WinSrv2019-3-rec,phase1,avtest,true,StorageOptimized
+2,Centos1,centos1-rec,phase2,avtest,true,StorageOptimized
+2,Centos2,centos2-red,phase2,avtest,true,StorageOptimized
