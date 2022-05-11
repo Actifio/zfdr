@@ -54,7 +54,7 @@ In the CSV file we normally need to configure the following columns:
 * label:  This does not need to be set, but is used by the backup appliance to find images.   If we set it, we can use it for identification.  
 * poweronvm:  This is the power state of the mounted VM.  If blank, then poweronvm is true.   If the word **false** is in this column, the VM will not be powered on.  
 * onvault:  The value you would normally use here is always *true* indicating you want OnVault images to be used.   If you don't specify anything here then the process will look firstly for snapshots.
-* -perfoption:   Valid values here are StorageOptimized, Balanced, PerformanceOptimized or MaximumPerformance.  We recommend StorageOptimized since this will bypass the snapshot pool altogether.   This is best if you are going to use storage vMotion (migration) to move the data onto the VMware datastore, since it means that same data wont be written into the snapshot pool.
+* perfoption:   Valid values here are StorageOptimized, Balanced, PerformanceOptimized or MaximumPerformance.  We recommend StorageOptimized since this will bypass the snapshot pool altogether.   This is best if you are going to use storage vMotion (migration) to move the data onto the VMware datastore, since it means that same data wont be written into the snapshot pool.
 
 ## Networking
 By default after creating a new VM, the VM has the following characteristics and consequent considerations:
