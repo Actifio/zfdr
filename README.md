@@ -2,6 +2,10 @@
 
 The purpose of this script is to help clients run DR failovers when using GCVE as a DR target for VMware VMs.
 
+## Video walk through
+
+There is a video walkthrough of this tool posted here:  https://youtu.be/huWA6P77p9Q
+
 ## Expected configuration
 
 The expected configuration is that the end-user will have one of three topologies:
