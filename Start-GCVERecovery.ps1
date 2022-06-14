@@ -1,7 +1,6 @@
 function Start-GCVERecovery ([string]$filename,[int]$phase)
 {
     #Requires -Version 7
-    #Requires -Modules VMware.PowerCLI
     <#
     .SYNOPSIS
    Guided menu for DR failover to GCVE using Actifio GO
