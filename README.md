@@ -1,6 +1,6 @@
 # ZFDR
 
-The purpose of this script is to help clients run DR failovers when using GCVE as a DR target for VMware VMs.
+The purpose of this script is to help users run DR failovers when using GCVE as a DR target for VMware VMs.
 
 ## Video walk through
 
@@ -20,8 +20,7 @@ The expected configuration is that the end-user will have one of three topologie
 The goal is to offer a simplified way to manage failover from Production to DR or failback where:
 * The backup mechanism is to place VMware VM backups into Google Cloud Storage (GCS) using OnVault images.
 * These images are created by a Backup Appliance on the Production site and then imported by a Backup Appliance on the DR site.
-* The number of VMs that need to be recovered is neither trivial (such as 6) or massive (such as 600), but somewhere between that.
-* At this time everything is coded on the assumption that each VM name is unique.   This may not be totally realistic in the real world, but is a good practical suggestion (since duplicate VM names are confusing)
+* At this time everything is coded on the assumption that each VM name is unique.   This may not be realistic in the real world, but is a good practical suggestion (since duplicate VM names are always confusing)
 
 ## Failover and failback
 
@@ -33,7 +32,7 @@ Effectively failover and failback are identical because they are achieved using 
 Installation tips:
 
 * This function requries PowerShell 7 and will not work with PowerShell 5.  
-* If you are seeing a message requiring you to install the VMware Image Builder module, make sure you are using the latest version of the ps1 file found in this repository.
+* To prevent seeing a message requiring you to install the VMware Image Builder module, make sure you are using the latest version of the ps1 file found in this repository.
 * If you cannot run install-module from PowerShell Gallery due to corporate networking or security, then you can install the two Actifio modules from their github repos found here:  https://github.com/Actifio and the VMware module from here:  https://developer.vmware.com/web/tool/vmware-powercli
 
 ### PowerShell Version 7
@@ -65,7 +64,7 @@ Set your password:
 ```
 $mysecret = "password"
 ```
-Connect to the AGM.  The second command is used to confirm you have connected.
+Connect to the AGM.  The second command in each example is used to confirm you have connected.
 ```
 Connect-agm 10.10.0.3 admin $mysecret -i
 Get-AGMVersion
@@ -94,7 +93,7 @@ Every time the function is run it will validate if connections exist to an AGM a
 
 ### Source side operations
 
-Currently there are the following functions.  More may be added.  
+Currently there are the following functions.  
   ```
   1: Login to AGM            Do you need to login to AGM with Connect-AGM?
   2: Login to vCenter        Do you need to login to vCenter with Connect-VIServer?
@@ -102,7 +101,7 @@ Currently there are the following functions.  More may be added.
   4: Display VMware Config   Do you want to display the config of your current VMs?
   5: Export VMware Config    Do you want to export the config of your current VMs?  This creates a new CSV file.
   ```
-  Effectively the order of operations prior a failover is the following:
+  Effectively the order of operations on the source side prior to a failover is the following:
 
 1. The user creates the CSV file and maintains it.  Particular care is taken to ensure that:
    * The correct phase is set for each VM
@@ -112,7 +111,7 @@ Currently there are the following functions.  More may be added.
 
 ### Target side operations
 
-Currently there are the following functions.  More may be added.   
+Currently there are the following functions.  
 ```
  1: Login to AGM            Do you need to login to AGM with Connect-AGM?
  2: Login to vCenter        Do you need to login to vCenter with Connect-VIServer?
@@ -137,7 +136,7 @@ Effectively the order of operations in a failover is the following:
 1. The user logs into vCenter 
 1. The user logs into AGM
 1. The user imports the OnVault images into the local Backup Appliance 
-1. The user sets the name of the CSV
+1. The user supplies the name of the CSV (created and maintained from the source side)
 
 Then for each phase:
 
@@ -145,7 +144,7 @@ Then for each phase:
 1. The user starts the creation of the VMs in the current phase
 1. The user validates the VMs are created
 1. The user changes the network settings inside the VM if needed.
-1. The user sets the network for the VMs in the current phase
+1. The user sets the network for the VMs mounted in the current phase
 1. The user validates the VMs are ready and the phase is complete
 
 ### Target Side next steps
@@ -166,7 +165,7 @@ Having run the mounts and created the VMs we have three scenarios:
   * Monitor the migrate with option 17
   * Confirm all migrates are complete with option 11
   * When the migrates are done and no VM depends on NFS datastore from backup appliance, run option 15 to remove the mounts
-  * Use AGM import wizard to apply templates to any VMs you want to create backups from.   Do not protect a VM prior to migrating it or the snapshot pool may fill up.
+  * Use the AGM import wizard to apply templates to any VMs you want to create backups from.   Do not protect a VM prior to migrating it or the snapshot pool may fill up.
  
  ## CSV file
 
@@ -199,7 +198,7 @@ In the CSV file we normally need to configure the following columns:
 * label:  This does not need to be set, but is used by the backup appliance to find images.   If we set it, we can use it for identification.  
 * poweronvm:  This is the power state of the mounted VM.  If blank, then poweronvm is true.   If the word **false** is in this column, the VM will not be powered on.  
 * onvault:  The value you would normally use here is always *true* indicating you want OnVault images to be used.   If you don't specify anything here then the process will look firstly for snapshots.
-* perfoption:   Valid values here are StorageOptimized, Balanced, PerformanceOptimized or MaximumPerformance.  We recommend StorageOptimized since this will bypass the snapshot pool altogether.   This is best if you are going to use storage vMotion (migration) to move the data onto the VMware datastore, since it means that same data wont be written into the snapshot pool.
+* perfoption:   Valid values here are StorageOptimized, Balanced, PerformanceOptimized or MaximumPerformance.  We recommend StorageOptimized since this will bypass the snapshot pool altogether.   This is best if you are going to use storage vMotion (migration) to move the data onto the VMware datastore, since it means that the data wont be written into the snapshot pool as it is migrated.
 
 ## Networking
 By default after creating a new VM, the VM has the following characteristics and consequent considerations:
@@ -245,7 +244,7 @@ If we want to retain the same MAC address we need to set this BEFORE the OS boot
       * If the Backup Appliance Mount is using the default performance option of **Balanced** then the first snapshot will cause the whole VM to be copied to the Backup Appliance snapshot pool.  If the client created a small snapshot pool this can lead to a pool full condition.
       * During the VMware snapshot, the VM disk files are reported as being on the VSAN, but once the snapshot is completed they report as being on the NFS datastore.  This is just a display bug, but is confusing.
    * Run VMware migration (Storage vMotion) to move the data off the Backup Appliance presented NFS datastore onto the client side datastores.
-   * Ensure the Sky Appliance is the expected model (e2-standard16). This is the recommended GCE Instance size for the Sky Appliance since it gives you the best possible disk and network performance.
+   * Ensure any GCE Sky Appliance is the expected model (e2-standard16). This is the recommended GCE Instance size for the Sky Appliance since it gives you the best possible disk and network performance.
    * The script at present offers serial and parallel migration.
 
    ## Backing up your new VMs
