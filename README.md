@@ -1,7 +1,7 @@
 # ZFDR
 
-The purpose of this script is to help users run DR failovers when using GCVE as a DR target for VMware VMs.
-
+The purpose of this script is to help users run DR failovers when using Actifio GO to create VMwware VM backups and GCVE as a DR target for VMware VMs.
+ 
 ## Video walk through
 
 There is a video walkthrough of this tool posted here:  https://youtu.be/huWA6P77p9Q
