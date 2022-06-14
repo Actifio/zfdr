@@ -1,10 +1,10 @@
 # ZFDR
 
-The purpose of this script is to help users run DR failovers when using Actifio GO to create VMwware VM backups and GCVE as a DR target for VMware VMs.
- 
+The purpose of this script is to help users run DR failovers when using Actifio GO to create VMware VM backups and GCVE as a DR target for VMware VMs.
+
 ## Video walk through
 
-There is a video walkthrough of this tool posted here:  https://youtu.be/huWA6P77p9Q
+There is a video walk through of this tool posted here:  https://youtu.be/huWA6P77p9Q
 
 ## Expected configuration
 
@@ -31,7 +31,7 @@ Effectively failover and failback are identical because they are achieved using 
 
 Installation tips:
 
-* This function requries PowerShell 7 and will not work with PowerShell 5.  
+* This function requires PowerShell 7 and will not work with PowerShell 5.  
 * To prevent seeing a message requiring you to install the VMware Image Builder module, make sure you are using the latest version of the ps1 file found in this repository.
 * If you cannot run install-module from PowerShell Gallery due to corporate networking or security, then you can install the two Actifio modules from their github repos found here:  https://github.com/Actifio and the VMware module from here:  https://developer.vmware.com/web/tool/vmware-powercli
 
@@ -100,6 +100,7 @@ Currently there are the following functions.
   3: Export AGM SLTs         Do you want to export your Policy Templates from AGM?  If we have two AGMs, this will help us set up protection on the target side.
   4: Display VMware Config   Do you want to display the config of your current VMs?
   5: Export VMware Config    Do you want to export the config of your current VMs?  This creates a new CSV file.
+  6: Update VMware Config    Do you want to update a previous export?  This creates a new CSV file by comparing a previous export to the current config and adding any new VMs using the source VM name
   ```
   Effectively the order of operations on the source side prior to a failover is the following:
 
@@ -108,6 +109,7 @@ Currently there are the following functions.
    * That the desired target network is set and that the desired target MAC address is set if needed
    * That a meaningful target name is used.   For tests it may be necessary to use a different target name
    * That a useful label is set
+1. The user regularly updates the CSV file to catch any new VMs.
 
 ### Target side operations
 

@@ -396,6 +396,61 @@ function Start-GCVERecovery ([string]$filename,[int]$phase)
         sourcesideactions
    }
 
+    # this function is used to create a starter CSV file on the source side
+    function updatevmwareconfig
+    {
+        $infile = Read-Host "Please supply the name an existing output csv file (xxxx.csv) that needs to be updated"
+        if ( Test-Path $infile )
+        {
+            #  sourcevmname,sourcepowerstate,sourcenicname,sourcenetworkname,sourceconnectionstate,sourcemacaddress,sourceipaddress
+            $importedvms =  Import-Csv -path $infile
+            # if we cannot find the first columnm this is probably not a valid source file
+            if ($importedvms.sourcevmname -eq $null) 
+            { 
+                Read-Host -Prompt "The specified file does not appear contain valid data to be a source file"
+                sourcesideactions
+            }
+        }
+        else 
+        {
+            Read-Host -Prompt "Could not open the specified file $infile.  Please check it exists"
+            sourcesideactions
+        } 
+        $outfile = Read-Host "Please supply the name for a new output csv file (xxxx.csv) that will be created"
+        # we need an unused output file name
+        if ( Test-Path $outfile )
+        {            
+        Read-Host -Prompt "The output file name $outfile already exists.  Please specify a file name that is unused."
+        sourcesideactions
+        }
+        write-host "Fetching VM details, this may take some time"
+        $foundvms = Get-VM | Get-NetworkAdapter | Select-Object @{N="sourcevmname";E={$_.Parent.Name}},@{N="sourcepowerstate";E={$_.Parent.PowerState}},@{N="sourcenicname";E={$_.Name}},@{N="sourcenetworkname";E={$_.NetworkName}},@{N="sourceconnectionstate";E={$_.ConnectionState}},@{N="sourcemacaddress";E={$_.MacAddress}},@{N="sourceipaddress";E={@($_.Parent.guest.IPAddress[0])}},phase,targetvmname,label,targetnetworkname,poweronvm,targetmacaddress
+        foreach ($vm in $foundvms)
+        {
+            $vmpeek = $importedvms | where-object {($_.sourcevmname -eq $vm.sourcevmname)}
+            if ($vmpeek)
+            {
+                write-host "Found existing VM: " $vm.sourcevmname
+            }
+            else 
+            {
+                write-host "Found new VM to add to the recovery plan: " $vm.sourcevmname
+                $importedvms += [pscustomobject]@{
+                    sourcevmname = $vm.sourcevmname
+                    sourcepowerstate = $vm.sourcepowerstate
+                    sourcenicname = $vm.sourcenicname
+                    sourcenetworkname = $vm.sourcenetworkname
+                    sourceconnectionstate = $vm.sourceconnectionstate
+                    sourcemacaddress = $vm.sourcemacaddress
+                    sourceipaddress = $vm.sourceipaddress
+                }
+            }
+        }
+        write-host "Writing to output file: $outfile"
+        $importedvms | Export-Csv -path $outfile
+        sourcesideactions 
+    }
+
    # this function is used to setup networking for our new VMs.   
    function configurevmwarevms
    {
@@ -694,8 +749,9 @@ function Start-GCVERecovery ([string]$filename,[int]$phase)
          write-host " 3`: Export AGM SLTs         Do you want to export your Policy Templates from AGM?"
          write-host " 4`: Display VMware Config   Do you want to display the config of your current VMs?"
          write-host " 5`: Export VMware Config    Do you want to export the config of your current VMs?"
-         write-host " 6`: Back                    Take me back to the previous menu"
-         write-host " 7`: Exit                    Take me back to the command line"
+         write-host " 6`: Update VMware Config    Do you want to update a previously exported config file to add any new VMs?"
+         write-host " 7`: Back                    Take me back to the previous menu"
+         write-host " 8`: Exit                    Take me back to the command line"
          Write-Host ""
          # ask the user to choose
          While ($true) 
@@ -717,8 +773,9 @@ function Start-GCVERecovery ([string]$filename,[int]$phase)
          if ($userselection2 -eq 3) { exportagmslts } 
          if ($userselection2 -eq 4) { listsourcevmwarevms } 
          if ($userselection2 -eq 5) { exportvmwareconfig } 
-         if ($userselection2 -eq 6) { mainmenu }
-         if ($userselection2 -eq 7) { break }
+         if ($userselection2 -eq 6) { updatevmwareconfig } 
+         if ($userselection2 -eq 7) { mainmenu }
+         if ($userselection2 -eq 8) { break }
  
      }
 
