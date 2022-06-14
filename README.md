@@ -76,10 +76,11 @@ Get-VM
 ```
 
 ## Import Start-GCVERecovery.ps1
-We need to import our ps1 file as a module:
+We need to import our ps1 file as a module.  The unblock command is needed if you downloaded the file in a zip file to a Windows host.
+
 ```
-PS C:\Users\avw\Downloads> Import-Module .\Start-GCVERecovery.ps1
-PS C:\Users\avw\Downloads>
+Unblock-File -Path .\Start-GCVERecovery.ps1
+Import-Module .\Start-GCVERecovery.ps1
 ```
 The **Start-GCVERecovery** function is used to:
 * Gather information on the source side
