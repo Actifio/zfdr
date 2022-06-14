@@ -399,7 +399,7 @@ function Start-GCVERecovery ([string]$filename,[int]$phase)
     # this function is used to create a starter CSV file on the source side
     function updatevmwareconfig
     {
-        $infile = Read-Host "Please supply the name an existing output csv file (xxxx.csv) that needs to be updated"
+        $infile = Read-Host "Please supply the name an existing csv file that that was exported previously. This file will not be changed."
         if ( Test-Path $infile )
         {
             #  sourcevmname,sourcepowerstate,sourcenicname,sourcenetworkname,sourceconnectionstate,sourcemacaddress,sourceipaddress
@@ -430,7 +430,7 @@ function Start-GCVERecovery ([string]$filename,[int]$phase)
             $vmpeek = $importedvms | where-object {($_.sourcevmname -eq $vm.sourcevmname)}
             if ($vmpeek)
             {
-                write-host "Found existing VM: " $vm.sourcevmname
+                # write-host "Found existing VM: " $vm.sourcevmname
             }
             else 
             {
