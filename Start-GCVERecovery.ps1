@@ -399,7 +399,7 @@ function Start-GCVERecovery ([string]$filename,[int]$phase)
     # this function is used to create a starter CSV file on the source side
     function updatevmwareconfig
     {
-        $infile = Read-Host "Please supply the name an existing csv file that that was exported previously. This file will not be changed."
+        $infile = Read-Host "Please supply the name an existing csv file that that was exported previously. This file will not be changed"
         if ( Test-Path $infile )
         {
             #  sourcevmname,sourcepowerstate,sourcenicname,sourcenetworkname,sourceconnectionstate,sourcemacaddress,sourceipaddress
@@ -407,20 +407,20 @@ function Start-GCVERecovery ([string]$filename,[int]$phase)
             # if we cannot find the first columnm this is probably not a valid source file
             if ($importedvms.sourcevmname -eq $null) 
             { 
-                Read-Host -Prompt "The specified file does not appear contain valid data to be a source file. Press enter to continue."
+                Read-Host -Prompt "The specified file does not appear contain valid data to be a source file. Press enter to continue"
                 sourcesideactions
             }
         }
         else 
         {
-            Read-Host -Prompt "Could not open the specified file $infile. Please check it exists. Press enter to continue."
+            Read-Host -Prompt "Could not open the specified file $infile. Please check it exists. Press enter to continue"
             sourcesideactions
         } 
         $outfile = Read-Host "Please supply the name for a new output csv file (xxxx.csv) that will be created"
         # we need an unused output file name
         if ( Test-Path $outfile )
         {            
-        Read-Host -Prompt "The output file name $outfile already exists.  Please specify a file name that is unused. Press enter to continue."
+        Read-Host -Prompt "The output file name $outfile already exists.  Please specify a file name that is unused. Press enter to continue"
         sourcesideactions
         }
         write-host "Fetching VM details, this may take some time"
@@ -447,7 +447,7 @@ function Start-GCVERecovery ([string]$filename,[int]$phase)
             }
         }
         $importedvms | Export-Csv -path $outfile
-        Read-Host -Prompt "Wrote to new output file: $outfile    Press enter to continue."
+        Read-Host -Prompt "Wrote to new output file: $outfile    Press enter to continue"
         sourcesideactions 
     }
 
