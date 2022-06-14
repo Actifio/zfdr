@@ -27,68 +27,6 @@ The goal is to offer a simplified way to manage failover from Production to DR o
 
 Effectively failover and failback are identical because they are achieved using the same mechanism, so we will only use the term failover.   Where you read failover, failback is performed in exactly the same way.
 
-## CSV file
-
-The expectation is that the user will maintain a CSV file that is essentially the heart of the failover operation.
-We can create a CSV from the source side with all the right headings using the export CSV option or we can start by creating a CSV on the source side which will have at least the following headings:
-```
-sourcevmname
-sourcepowerstate
-sourcenicname
-sourceconnectionstate
-sourcemacaddress
-sourceipaddress
-phase
-targetvmname
-label
-targetnetworkname
-targetmacaddress
-label
-poweronvm
-onvault
-perfoption
-```
-Without the CSV file we cannot function, meaning we cannot enter a DR situation and then use this function to a run a failover without it.   We don't want to be creating CSV files during a DR.
-In the CSV file we normally need to configure the following columns:
-
-* phase:  in most scenarios we will start the VMs in phases, which means we run through a phase for each set of recoveries.  Which phase a VM belongs in cannot normally be guessed.  It usually needs the Administrator to have a clear understanding of VM creation order.
-* targetvmname.   For some cases this will be the source VM name, but for testing, this may not work.  Please ensure this field is set to remove any risk of confusion.
-* targetnetworkname:  This is the name of the network where we want the VM to be placed.   Note the VM must be powered on to change the network,
-* targetmacaddress:  This is the mac address of the NIC of the new VM.   Leave this blank unless needed.  If set, the VM should always be created in a powered off state since you don't want the VM to 'wake up' and find a new MAC Address.
-* label:  This does not need to be set, but is used by the backup appliance to find images.   If we set it, we can use it for identification.  
-* poweronvm:  This is the power state of the mounted VM.  If blank, then poweronvm is true.   If the word **false** is in this column, the VM will not be powered on.  
-* onvault:  The value you would normally use here is always *true* indicating you want OnVault images to be used.   If you don't specify anything here then the process will look firstly for snapshots.
-* perfoption:   Valid values here are StorageOptimized, Balanced, PerformanceOptimized or MaximumPerformance.  We recommend StorageOptimized since this will bypass the snapshot pool altogether.   This is best if you are going to use storage vMotion (migration) to move the data onto the VMware datastore, since it means that same data wont be written into the snapshot pool.
-
-## Networking
-By default after creating a new VM, the VM has the following characteristics and consequent considerations:
-* The VM is powered on with a new MAC Address
-* The NICs are disconnected. This is done to ensure fixed IP addresses do not result in duplicate IPs on the network.  
-* If the same network as the source exists, the VM will be connected to that network, otherwise it will default to **unknown**
-Potential issues because of this behaviour:
-* The VM NICs will have new MAC addresses.
-  * For Linux VMs this can be a major issue.  You may have a situation where the existing eth0 no longer works (as it is bound to the old MAC address) and a new eth1 is created which also doesn't work (because the VMs nic is bound to eth0)
-  * If DHCP is being used based on MAC address, then IPs will not be allocated
-  * If the host is running licensed software, the software may perceive the host has 'changed' and the software will need to be relicensed.
-  * If a fixed MAC address is specified with **targetmacaddress** then the VM will be created in the powered off mode regardless of how **poweronvm** is set
-* The VM has the same IP settings as the source, meaning:
-  * If the VM had a configured IP, it still will have.  This means if you recover into the production network or one routed to it, you can have duplicate IPs
-  * If the VM was set for DHCP it still will be. This means if there is no DHCP server there will be no IPs set.  Also if DHCP uses MAC addresses for allocation and the VMs have new MAC addresses, this can cause issues  
-* We can use VMware tool commands to change the IP settings, but this requires host authentication when running the **Invoke-VMScript** command
-
-There can be several scenarios:
-
-* We recover to the same networks which are pre-created, using the same network settings. For each VM we then:
-  * Enable the network interface
-* We recover to a different network, which is pre-created, using the same network settings. For each VM we then:
-  * Set the network
-  * Enable the network interface
-* We recover to the same networks which are pre-created, using different network settings. For each VM we then:
-  * Run an OS command to set the network settings (something this script does not currently support)
-  * Set the network
-  * Enable the network interface
-
-If we want to retain the same MAC address we need to set this BEFORE the OS boots up.   We do NOT want a situation where the OS starts with a new MAC and then we set the original.   This only makes the situation harder to resolve.
 
 ## Installation and setup
 
@@ -223,6 +161,71 @@ Having run the mounts and created the VMs we have three scenarios:
   * Confirm all migrates are complete with option 11
   * When the migrates are done and no VM depends on NFS datastore from backup appliance, run option 15 to remove the mounts
   * Use AGM import wizard to apply templates to any VMs you want to create backups from.   Do not protect a VM prior to migrating it or the snapshot pool may fill up.
+ 
+ ## CSV file
+
+The expectation is that the user will maintain a CSV file that is essentially the heart of the failover operation.
+We can create a CSV from the source side with all the right headings using the export CSV option or we can start by creating a CSV on the source side which will have at least the following headings:
+```
+sourcevmname
+sourcepowerstate
+sourcenicname
+sourceconnectionstate
+sourcemacaddress
+sourceipaddress
+phase
+targetvmname
+label
+targetnetworkname
+targetmacaddress
+label
+poweronvm
+onvault
+perfoption
+```
+Without the CSV file we cannot function, meaning we cannot enter a DR situation and then use this function to a run a failover without it.   We don't want to be creating CSV files during a DR.
+In the CSV file we normally need to configure the following columns:
+
+* phase:  in most scenarios we will start the VMs in phases, which means we run through a phase for each set of recoveries.  Which phase a VM belongs in cannot normally be guessed.  It usually needs the Administrator to have a clear understanding of VM creation order.
+* targetvmname.   For some cases this will be the source VM name, but for testing, this may not work.  Please ensure this field is set to remove any risk of confusion.
+* targetnetworkname:  This is the name of the network where we want the VM to be placed.   Note the VM must be powered on to change the network,
+* targetmacaddress:  This is the mac address of the NIC of the new VM.   Leave this blank unless needed.  If set, the VM should always be created in a powered off state since you don't want the VM to 'wake up' and find a new MAC Address.
+* label:  This does not need to be set, but is used by the backup appliance to find images.   If we set it, we can use it for identification.  
+* poweronvm:  This is the power state of the mounted VM.  If blank, then poweronvm is true.   If the word **false** is in this column, the VM will not be powered on.  
+* onvault:  The value you would normally use here is always *true* indicating you want OnVault images to be used.   If you don't specify anything here then the process will look firstly for snapshots.
+* perfoption:   Valid values here are StorageOptimized, Balanced, PerformanceOptimized or MaximumPerformance.  We recommend StorageOptimized since this will bypass the snapshot pool altogether.   This is best if you are going to use storage vMotion (migration) to move the data onto the VMware datastore, since it means that same data wont be written into the snapshot pool.
+
+## Networking
+By default after creating a new VM, the VM has the following characteristics and consequent considerations:
+* The VM is powered on with a new MAC Address
+* The NICs are disconnected. This is done to ensure fixed IP addresses do not result in duplicate IPs on the network.  
+* If the same network as the source exists, the VM will be connected to that network, otherwise it will default to **unknown**
+Potential issues because of this behaviour:
+* The VM NICs will have new MAC addresses.
+  * For Linux VMs this can be a major issue.  You may have a situation where the existing eth0 no longer works (as it is bound to the old MAC address) and a new eth1 is created which also doesn't work (because the VMs nic is bound to eth0)
+  * If DHCP is being used based on MAC address, then IPs will not be allocated
+  * If the host is running licensed software, the software may perceive the host has 'changed' and the software will need to be relicensed.
+  * If a fixed MAC address is specified with **targetmacaddress** then the VM will be created in the powered off mode regardless of how **poweronvm** is set
+* The VM has the same IP settings as the source, meaning:
+  * If the VM had a configured IP, it still will have.  This means if you recover into the production network or one routed to it, you can have duplicate IPs
+  * If the VM was set for DHCP it still will be. This means if there is no DHCP server there will be no IPs set.  Also if DHCP uses MAC addresses for allocation and the VMs have new MAC addresses, this can cause issues  
+* We can use VMware tool commands to change the IP settings, but this requires host authentication when running the **Invoke-VMScript** command
+
+There can be several scenarios:
+
+* We recover to the same networks which are pre-created, using the same network settings. For each VM we then:
+  * Enable the network interface
+* We recover to a different network, which is pre-created, using the same network settings. For each VM we then:
+  * Set the network
+  * Enable the network interface
+* We recover to the same networks which are pre-created, using different network settings. For each VM we then:
+  * Run an OS command to set the network settings (something this script does not currently support)
+  * Set the network
+  * Enable the network interface
+
+If we want to retain the same MAC address we need to set this BEFORE the OS boots up.   We do NOT want a situation where the OS starts with a new MAC and then we set the original.   This only makes the situation harder to resolve.
+
+ 
  
  ## Other tasks that could be automated
 
