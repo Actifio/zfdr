@@ -407,20 +407,20 @@ function Start-GCVERecovery ([string]$filename,[int]$phase)
             # if we cannot find the first columnm this is probably not a valid source file
             if ($importedvms.sourcevmname -eq $null) 
             { 
-                Read-Host -Prompt "The specified file does not appear contain valid data to be a source file"
+                Read-Host -Prompt "The specified file does not appear contain valid data to be a source file. Press enter to continue."
                 sourcesideactions
             }
         }
         else 
         {
-            Read-Host -Prompt "Could not open the specified file $infile.  Please check it exists"
+            Read-Host -Prompt "Could not open the specified file $infile. Please check it exists. Press enter to continue."
             sourcesideactions
         } 
         $outfile = Read-Host "Please supply the name for a new output csv file (xxxx.csv) that will be created"
         # we need an unused output file name
         if ( Test-Path $outfile )
         {            
-        Read-Host -Prompt "The output file name $outfile already exists.  Please specify a file name that is unused."
+        Read-Host -Prompt "The output file name $outfile already exists.  Please specify a file name that is unused. Press enter to continue."
         sourcesideactions
         }
         write-host "Fetching VM details, this may take some time"
@@ -446,8 +446,8 @@ function Start-GCVERecovery ([string]$filename,[int]$phase)
                 }
             }
         }
-        write-host "Writing to output file: $outfile"
         $importedvms | Export-Csv -path $outfile
+        Read-Host -Prompt "Wrote to new output file: $outfile    Press enter to continue."
         sourcesideactions 
     }
 
@@ -757,7 +757,7 @@ function Start-GCVERecovery ([string]$filename,[int]$phase)
          While ($true) 
          {
              Write-host ""
-             $listmax = 7
+             $listmax = 8
              [int]$userselection2 = Read-Host "Please select from this list [1-$listmax]"
              if ($userselection2 -lt 1 -or $userselection2 -gt $listmax)
              {
