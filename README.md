@@ -30,9 +30,15 @@ Effectively failover and failback are identical because they are achieved using 
 
 ## Installation and setup
 
+Installation tips:
+
+* This function requries PowerShell 7 and will not work with PowerShell 5.  
+* If you are seeing a message requiring you to install the VMware Image Builder module, make sure you are using the latest version of the ps1 file found in this repository.
+* If you cannot run install-module from PowerShell Gallery due to corporate networking or security, then you can install the two Actifio modules from their github repos found here:  https://github.com/Actifio and the VMware module from here:  https://developer.vmware.com/web/tool/vmware-powercli
+
 ### PowerShell Version 7
 
-To install PowerShell 7 in Windows:
+To install PowerShell 7 in Windows go here:
 https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-windows
 
 To install PowerShell in Linux:
@@ -45,7 +51,7 @@ sudo yum install -y powershell
 pwsh
 ```
 
-### Install all the modules
+### Install three modules
 Run these four commands.  The fourth one presumes your vCenter does not have a signed cert (which is the case for GCVE)  
 Minimum version of AGMPowerLib is 0.0.0.43
 ```
@@ -61,7 +67,7 @@ $mysecret = "password"
 ```
 Connect to the AGM.  The second command is used to confirm you have connected.
 ```
-Connect-agm 10.152.0.5 admin $mysecret -i
+Connect-agm 10.10.0.3 admin $mysecret -i
 Get-AGMVersion
 ```
 Connect to vCenter.  The second command confirms you have connected.
@@ -239,7 +245,7 @@ If we want to retain the same MAC address we need to set this BEFORE the OS boot
       * If the Backup Appliance Mount is using the default performance option of **Balanced** then the first snapshot will cause the whole VM to be copied to the Backup Appliance snapshot pool.  If the client created a small snapshot pool this can lead to a pool full condition.
       * During the VMware snapshot, the VM disk files are reported as being on the VSAN, but once the snapshot is completed they report as being on the NFS datastore.  This is just a display bug, but is confusing.
    * Run VMware migration (Storage vMotion) to move the data off the Backup Appliance presented NFS datastore onto the client side datastores.
-   * We need to consider pacing of the migrations.  On a e2-standard8 migrating just one VM showed 50% CPU on the backup appliance with network throughput of 250 MBps so it is recommended more CPUs be allocated.  An e2-standard16 is the recommened GCE Instance size for the Sky Appliance since it gives you the highest performance.
+   * Ensure the Sky Appliance is the expected model (e2-standard16). This is the recommended GCE Instance size for the Sky Appliance since it gives you the best possible disk and network performance.
    * The script at present offers serial and parallel migration.
 
    ## Backing up your new VMs
