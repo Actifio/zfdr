@@ -2,6 +2,18 @@
 
 The purpose of this script is to help users run DR failovers when using Actifio GO to create VMware VM backups and GCVE as a DR target for VMware VMs.
 
+### Table of Contents
+**[Video walk through](#video-walk-through)**<br>
+**[Expected configuration](#expected-configuration)**<br>
+**[Failover and failback](#failover-and-failback)**<br>
+**[Installation and setup](#installation-and-setup)**<br>
+**[Import Start-GCVERecovery ps1 file](#import-start-gcvrecovery-ps1-file)**<br>
+**[CSV file](#csv-file)**<br>
+**[Networking](#networking)**<br>
+**[Post DR failover tasks](#post-dr-failover-tasks)**<br>
+**[Contributing](#contributing)**<br>
+**[License](#license)**<br>
+
 ## Video walk through
 
 There is a video walk through of this tool posted here:  https://youtu.be/huWA6P77p9Q
@@ -16,7 +28,6 @@ The expected configuration is that the end-user will have one of three topologie
 | GCVE | On-premises  |
 | GCVE | GCVE  |
 
-
 The goal is to offer a simplified way to manage failover from Production to DR or failback where:
 * The backup mechanism is to place VMware VM backups into Google Cloud Storage (GCS) using OnVault images.
 * These images are created by a Backup Appliance on the Production site and then imported by a Backup Appliance on the DR site.
@@ -25,7 +36,6 @@ The goal is to offer a simplified way to manage failover from Production to DR o
 ## Failover and failback
 
 Effectively failover and failback are identical because they are achieved using the same mechanism, so we will only use the term failover.   Where you read failover, failback is performed in exactly the same way.
-
 
 ## Installation and setup
 
@@ -75,7 +85,7 @@ Connect-VIServer -Server 172.16.0.6 -User actifio-user@GVE.LOCAL -Password $myse
 Get-VM
 ```
 
-## Import Start-GCVERecovery.ps1
+## Import Start-GCVERecovery ps1 file
 We need to import our ps1 file as a module.  The unblock command is needed if you downloaded the file in a zip file to a Windows host.
 
 ```
@@ -233,28 +243,26 @@ There can be several scenarios:
 
 If we want to retain the same MAC address we need to set this BEFORE the OS boots up.   We do NOT want a situation where the OS starts with a new MAC and then we set the original.   This only makes the situation harder to resolve.
 
- 
- 
- ## Other tasks that could be automated
+## Post DR failover tasks
 
- In the DR side there are two major tasks post DR:
+In the DR side there are two major tasks post a DR failover:
 
- * Apply template/profile to each VM to start creating backups on the failover site. 
-   * We need to consider how to determine which template to use
-   * It is recommended that if you plan to migrate the VMs, that you do this before starting backups.
-   * Note that a VM can be backed up using VMware snapshots without being migrated, but this generates the following issues:   
-      * You may see high Backup Appliance CPU and network traffic as the data is being copied from the NFS datastore to ESX and then back to the Backup appliance.
-      * If the Backup Appliance Mount is using the default performance option of **Balanced** then the first snapshot will cause the whole VM to be copied to the Backup Appliance snapshot pool.  If the client created a small snapshot pool this can lead to a pool full condition.
-      * During the VMware snapshot, the VM disk files are reported as being on the VSAN, but once the snapshot is completed they report as being on the NFS datastore.  This is just a display bug, but is confusing.
-   * Run VMware migration (Storage vMotion) to move the data off the Backup Appliance presented NFS datastore onto the client side datastores.
-   * Ensure any GCE Sky Appliance is the expected model (e2-standard16). This is the recommended GCE Instance size for the Sky Appliance since it gives you the best possible disk and network performance.
-   * The script at present offers serial and parallel migration.
+* Apply template/profile to each VM to start creating backups on the failover site. 
+  * We need to consider how to determine which template to use
+  * It is recommended that if you plan to migrate the VMs, that you do this before starting backups.
+  * Note that a VM can be backed up using VMware snapshots without being migrated, but this generates the following issues:   
+    * You may see high Backup Appliance CPU and network traffic as the data is being copied from the NFS datastore to ESX and then back to the Backup appliance.
+    * If the Backup Appliance Mount is using the default performance option of **Balanced** then the first snapshot will cause the whole VM to be copied to the Backup Appliance snapshot pool.  If the client created a small snapshot pool this can lead to a pool full condition.
+    * During the VMware snapshot, the VM disk files are reported as being on the VSAN, but once the snapshot is completed they report as being on the NFS datastore.  This is just a display bug, but is confusing.
+  * Run VMware migration (Storage vMotion) to move the data off the Backup Appliance presented NFS datastore onto the client side datastores.
+  * Ensure any GCE Sky Appliance is the expected model (e2-standard16). This is the recommended GCE Instance size for the Sky Appliance since it gives you the best possible disk and network performance.
+  * The script at present offers serial and parallel migration.
 
-   ## Backing up your new VMs
-   After migrating your VMs to the target datastore, then you can apply policy templates to begin local backups.
-   Local backups can be configured through AGM by either:
-   * Adding the new VMs to a logical group and protecting that group
-   * Using the New Application wizard to protect all unmanaged VMs 
+* Backing up your new VMs
+  * After migrating your VMs to the target datastore, then you can apply policy templates to begin local backups.
+  * Local backups can be configured through AGM by either:
+    * Adding the new VMs to a logical group and protecting that group
+    * Using the New Application wizard to protect all unmanaged VMs 
 
 ## Contributing
 
@@ -271,5 +279,3 @@ it accepted.
 
 All files in this repository are under the
 [Apache License, Version 2.0](LICENSE) unless noted otherwise.
-
-
