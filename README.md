@@ -7,7 +7,7 @@ The purpose of this script is to help users run DR failovers when using Actifio 
 **[Expected configuration](#expected-configuration)**<br>
 **[Failover and failback](#failover-and-failback)**<br>
 **[Installation and setup](#installation-and-setup)**<br>
-**[Import Start-GCVERecovery ps1 file](#import-start-gcvrecovery-ps1-file)**<br>
+**[Import the Start-GCVERecovery ps1 file](#import-the-start-gcvrecovery-ps1-file)**<br>
 **[CSV file](#csv-file)**<br>
 **[Networking](#networking)**<br>
 **[Post DR failover tasks](#post-dr-failover-tasks)**<br>
@@ -85,7 +85,7 @@ Connect-VIServer -Server 172.16.0.6 -User actifio-user@GVE.LOCAL -Password $myse
 Get-VM
 ```
 
-## Import Start-GCVERecovery ps1 file
+## Import the Start GCVERecovery ps1 file
 We need to import our ps1 file as a module.  The unblock command is needed if you downloaded the file in a zip file to a Windows host.
 
 ```
