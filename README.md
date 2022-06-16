@@ -7,7 +7,7 @@ The purpose of this script is to help users run DR failovers when using Actifio 
 **[Expected configuration](#expected-configuration)**<br>
 **[Failover and failback](#failover-and-failback)**<br>
 **[Installation and setup](#installation-and-setup)**<br>
-**[Import the Start-GCVERecovery ps1 file](#import-the-start-gcvrecovery-ps1-file)**<br>
+**[Import the Start-GCVERecovery ps1 file](#import-the-start-gcverecovery-ps1-file)**<br>
 **[CSV file](#csv-file)**<br>
 **[Networking](#networking)**<br>
 **[Post DR failover tasks](#post-dr-failover-tasks)**<br>
