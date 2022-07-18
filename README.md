@@ -12,7 +12,6 @@ The purpose of this script is to help users run DR failovers when using Actifio 
 **[Networking](#networking)**<br>
 **[Post DR failover tasks](#post-dr-failover-tasks)**<br>
 **[Contributing](#contributing)**<br>
-**[License](#license)**<br>
 
 ## Video walk through
 
