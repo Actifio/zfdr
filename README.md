@@ -72,12 +72,24 @@ Set your password:
 ```
 $mysecret = "password"
 ```
-Connect to the AGM.  The second command in each example is used to confirm you have connected.
+#### Connect to the AGM.  
+If using Actifio you will need the correct syntax as shown in this example. More information can be found [here](https://github.com/Actifio/AGMPowerCLI/blob/main/README.md#4--login-to-your-agm---actifio-only)
+
+The second command is used to confirm you have connected.
 ```
 Connect-agm 10.10.0.3 admin $mysecret -i
 Get-AGMVersion
 ```
-Connect to vCenter.  The second command confirms you have connected.
+#### Connect to Management Console
+If using Google Cloud Backup and DR you will need the correct syntax as shown in this example.  More information can be found [here](https://github.com/Actifio/AGMPowerCLI/blob/main/GCBDR.md).
+
+The second command is used to confirm you have connected.
+```
+connect-agm -agmip agm-666993295923.backupdr.actifiogo.com -agmuser powershell@avwservicelab1.iam.gserviceaccount.com -oauth2ClientId 486522031570-fimdb0rbeamc17l3akilvquok1dssn6t.apps.googleusercontent.com
+Get-AGMVersion
+```
+#### Connect to vCenter.  
+The second command confirms you have connected.
 ```
 Connect-VIServer -Server 172.16.0.6 -User actifio-user@GVE.LOCAL -Password $mysecret
 Get-VM
