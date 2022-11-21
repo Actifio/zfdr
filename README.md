@@ -148,7 +148,7 @@ Currently there are the following functions.
 10: Monitor jobs            Do you want to monitor jobs running on the Backup Appliance
 11: List your mounts        Do you want to list the current mounts in Backup Appliance
 12: List your VMware VMs    Do you want to list the VMs in VMware
-13: List phase VMware VMs   Do you want to list the VMs in VMware created in this phase.  If you get nothing back, have you run step 6 yet?
+13: List phase VMware VMs   Do you want to list the VMs in VMware created in this phase.  If you get nothing back, have you run option 9 yet?
 14: Set VMware Networking   Do you want to configure VMware VM networking based on a phase number?  This will set network and enable network interface.  I will also change MAC address and power on the VM afterwards.
 15: MigrateVMs              Do you want to migrate the VMs in the current phase
 16: Unmount your images     Do you want to unmount the VMs we mounted?
@@ -176,19 +176,19 @@ Then for each phase:
 Having run the mounts and created the VMs we have three scenarios:
 
 1. We were doing a test and are finished.  We are not testing doing a migration of the VMs
-  * Use option 15 to unmount the images
+  * Use option 16 to unmount the images
 1. We are doing a test but are also testing storage migration to the VSAN
-  * Use option 14 to migrate your VMs
-  * Monitor the migrate with option 17
-  * Confirm all migrates are complete with option 11 (the datastore should NOT show the NFS datastore for any migrated VM)
-  * When you are finished, delete the VMs with option 16.  DO NOT run this until all migrates are complete or errors may occur (deletions during migrate can get stuck)
-  * When the VMs are deleted, run option 15 to remove the mounts
+  * Use option 15 to migrate your VMs
+  * Monitor the migrate with option 18
+  * Confirm all migrates are complete with option 12 (the datastore should NOT show the NFS datastore for any migrated VM)
+  * When you are finished, delete the VMs with option 17.  DO NOT run this until all migrates are complete or errors may occur (deletions during migrate can get stuck)
+  * When the VMs are deleted, run option 16 to remove the mounts
   * In the AGM GUI, any VM that was migrated before being unmounted will show as an unmanaged VM. You will need to delete these.
 1. This is permanent or semi-permanent
-  * Use option 14 to migrate your VMs
-  * Monitor the migrate with option 17
-  * Confirm all migrates are complete with option 11
-  * When the migrates are done and no VM depends on NFS datastore from backup appliance, run option 15 to remove the mounts
+  * Use option 15 to migrate your VMs
+  * Monitor the migrate with option 18
+  * Confirm all migrates are complete with option 12
+  * When the migrates are done and no VM depends on NFS datastore from backup appliance, run option 16 to remove the mounts
   * Use the AGM import wizard to apply templates to any VMs you want to create backups from.   Do not protect a VM prior to migrating it or the snapshot pool may fill up.
  
  ## CSV file
