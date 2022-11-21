@@ -140,7 +140,7 @@ Currently there are the following functions.
  2: Login to vCenter        Do you need to login to vCenter with Connect-VIServer?
  3: Import AGM SLTs         Do you want to import Policy Templates from the source AGM?  Note you need to have a file of exported SLTs to do this
  4: Import OnVault images   Do you want to import (or forget) the latest images from an OnVault pool so they can be used in the DR Site?
- 5: Create config file      Do you want to create a config file using the imported VMs, rather than use one created on the source side?"
+ 5: Create config file      Do you want to create a config file using the imported VMs, rather than use one created on the source side?
  6: Supply/display filename Do you want to set or display your recovery file.
  7: Set the phase           Do you want to set which phase it is.  Current phase is X
  8: List OnVault images     Do you want to see the latest backup date for each VM in the current phase?
