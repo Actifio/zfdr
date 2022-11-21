@@ -140,26 +140,27 @@ Currently there are the following functions.
  2: Login to vCenter        Do you need to login to vCenter with Connect-VIServer?
  3: Import AGM SLTs         Do you want to import Policy Templates from the source AGM?  Note you need to have a file of exported SLTs to do this
  4: Import OnVault images   Do you want to import (or forget) the latest images from an OnVault pool so they can be used in the DR Site?
- 5: Supply/display filename Do you want to set or display your recovery file.
- 6: Set the phase           Do you want to set which phase it is.  Current phase is X
- 7: List OnVault images     Do you want to see the latest backup date for each VM in the current phase?
- 8: Create new VMs          Do you create a new set of VMs based on a phase number?  This will start mount jobs on the Backup Appliance
- 9: Monitor jobs            Do you want to monitor jobs running on the Backup Appliance
-10: List your mounts        Do you want to list the current mounts in Backup Appliance
-11: List your VMware VMs    Do you want to list the VMs in VMware
-12: List phase VMware VMs   Do you want to list the VMs in VMware created in this phase.  If you get nothing back, have you run step 6 yet?
-13: Set VMware Networking   Do you want to configure VMware VM networking based on a phase number?  This will set network and enable network interface.  It will also change MAC address and power on the VM afterwards.
-14: MigrateVMs              Do you want to migrate the VMs in the current phase
-15: Unmount your images     Do you want to unmount the VMs we mounted?
-16: Delete VMs              Do you want to DELETE the VMs created in the current phase.  This would be done after finishing a test that included a migrate.
-17: List running tasks      List any running VMware tasks
+ 5: Create config file      Do you want to create a config file using the imported VMs, rather than use one created on the source side?"
+ 6: Supply/display filename Do you want to set or display your recovery file.
+ 7: Set the phase           Do you want to set which phase it is.  Current phase is X
+ 8: List OnVault images     Do you want to see the latest backup date for each VM in the current phase?
+ 9: Create new VMs          Do you create a new set of VMs based on a phase number?  This will start mount jobs on the Backup Appliance
+10: Monitor jobs            Do you want to monitor jobs running on the Backup Appliance
+11: List your mounts        Do you want to list the current mounts in Backup Appliance
+12: List your VMware VMs    Do you want to list the VMs in VMware
+13: List phase VMware VMs   Do you want to list the VMs in VMware created in this phase.  If you get nothing back, have you run step 6 yet?
+14: Set VMware Networking   Do you want to configure VMware VM networking based on a phase number?  This will set network and enable network interface.  I will also change MAC address and power on the VM afterwards.
+15: MigrateVMs              Do you want to migrate the VMs in the current phase
+16: Unmount your images     Do you want to unmount the VMs we mounted?
+17: Delete VMs              Do you want to DELETE the VMs created in the current phase.  This would be done after finishing a test that included a migrate.
+18: List running tasks      List any running VMware tasks
 ```
 Effectively the order of operations in a failover is the following:
 
 1. The user logs into vCenter 
 1. The user logs into AGM
 1. The user imports the OnVault images into the local Backup Appliance 
-1. The user supplies the name of the CSV (created and maintained from the source side)
+1. The user supplies the name of the CSV (created and maintained from the source side).  If there is no such file they can make one using the imported VMs.   This file will have less information since it could not query the source side VMware environment.
 
 Then for each phase:
 
