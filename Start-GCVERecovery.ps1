@@ -18,7 +18,7 @@ function Start-GCVERecovery ([string]$filename,[int]$phase)
     #Requires -Version 7
     <#
     .SYNOPSIS
-   Guided menu for DR failover to GCVE using Actifio GO
+   Guided menu for DR failover to GCVE using Google Cloud Backup and DR 
 
     .EXAMPLE
     Start-GCVERecovery
@@ -198,6 +198,37 @@ function Start-GCVERecovery ([string]$filename,[int]$phase)
         {
             return    
         }
+    }
+
+
+    function exportdrsidevmwareconfig
+    {
+        $filename = Read-Host "Please supply a name for the output csv file (xxxx.csv)"
+        if ( Test-Path $filename )
+        {
+            Read-Host -Prompt "That file name already exists"
+            sourcesideactions
+        }
+        else 
+        {
+            #  sourcevmname,sourcepowerstate,sourcenicname,sourcenetworkname,sourceconnectionstate,sourcemacaddress,sourceipaddress
+            $hostgrab = Get-AGMHost -filtervalue vmtype=vmware
+            if ($hostgrab.id.count -eq 0 )
+            {
+                write-host ""
+                Read-Host -Prompt "No hosts were found.  Run an import first"
+                write-host ""
+                gcveactions
+            }
+            else
+            {
+            Get-AGMHost -filtervalue vmtype=vmware | Select-Object @{N="sourcevmname";E={$_.hostname}},sourcepowerstate,sourcenicname,@{N="sourcenetworkname";E={$_.NetworkName}},@{N="sourceconnectionstate";E={$_.ConnectionState}},@{N="sourcemacaddress";E={$_.MacAddress}},@{N=”sourceipaddress”;E={@($_.ipaddress)}},phase,targetvmname,label,targetnetworkname,poweronvm,targetmacaddress | Export-Csv -path $filename
+            }
+            write-host ""
+            Read-Host -Prompt "You will need to update the file $filename before moving to the next step"
+            write-host ""
+        }
+        gcveactions
     }
 
     function listimportedimages
@@ -697,28 +728,29 @@ function Start-GCVERecovery ([string]$filename,[int]$phase)
         write-host " 2`: Login to vCenter        Do you need to login to vCenter with Connect-VIServer?"
         write-host " 3`: Import AGM SLTs         Do you want to import Policy Templates from the source AGM?  Note you need to have a file of exported SLTs to do this"
         write-host " 4`: Import OnVault images   Do you want to import (or forget) the latest images from an OnVault pool so they can be used in the DR Site?"
-        if ($filename) { write-host " 5`: Supply/Display filename Do you want to set or display your recovery file. Current file is: $filename" }
-        if (!($filename)) { write-host " 5`: Supply filename         Do you want to set and display your recovery file. No file is currently set." }
-        write-host " 6`: Set the phase           Do you want to set which phase it is.  Current phase is $phase"
-        Write-Host " 7`: List OnVault images     Do you want to see the latest backup date for each VM in the current phase?"
-        Write-Host " 8`: Create new VMs          Do you create a new set of VMs based on a phase number?"
-        Write-Host " 9`: Monitor running jobs    Do you want to monitor running jobs"
-        Write-Host "10`: List your mounts        Do you want to list the current mounts in Actifio"
-        Write-Host "11`: List all VMware VMs     Do you want to list the VMs in VMware"
-        Write-Host "12`: List new phase VMs      Do you want to list the VMs in VMware that were created in this phase"
-        Write-Host "13`: Set VMware Networking   Do you want to configure VMware VM networking based on a phase number?"
-        write-host "14`: Migrate VMs             Do you want to migrate the VMs in the current phase"
-        Write-Host "15`: Unmount your images     Do you want to unmount the VMs we mounted?"
-        write-host "16`: Delete VMs              Do you want to DELETE the VMs created in the current phase.  This would be done after finishing a test that included a migrate."
-        write-host "17`: List running tasks      List any running VMware tasks"
-        write-host "18`: Back                    Take me back to the previous menu"
-        write-host "19`: Exit                    Take me back to the command line"
+        write-host " 5`: Create config file      Do you want to create a config file using the imported VMs, rather than use one created on the source side?"
+        if ($filename) { write-host " 6`: Supply/Display filename Do you want to set or display your recovery file. Current file is: $filename" }
+        if (!($filename)) { write-host " 6`: Supply filename         Do you want to set and display your recovery file. No file is currently set." }
+        write-host " 7`: Set the phase           Do you want to set which phase it is.  Current phase is $phase"
+        Write-Host " 8`: List OnVault images     Do you want to see the latest backup date for each VM in the current phase?"
+        Write-Host " 9`: Create new VMs          Do you create a new set of VMs based on a phase number?"
+        Write-Host "10`: Monitor running jobs    Do you want to monitor running jobs"
+        Write-Host "11`: List your mounts        Do you want to list the current mounts"
+        Write-Host "12`: List all VMware VMs     Do you want to list the VMs in VMware"
+        Write-Host "13`: List new phase VMs      Do you want to list the VMs in VMware that were created in this phase"
+        Write-Host "14`: Set VMware Networking   Do you want to configure VMware VM networking based on a phase number?"
+        write-host "15`: Migrate VMs             Do you want to migrate the VMs in the current phase"
+        Write-Host "16`: Unmount your images     Do you want to unmount the VMs we mounted?"
+        write-host "17`: Delete VMs              Do you want to DELETE the VMs created in the current phase.  This would be done after finishing a test that included a migrate."
+        write-host "18`: List running tasks      List any running VMware tasks"
+        write-host "19`: Back                    Take me back to the previous menu"
+        write-host "20`: Exit                    Take me back to the command line"
         Write-Host ""
         # ask the user to choose
         While ($true) 
         {
             Write-host ""
-            $listmax = 19
+            $listmax = 20
             [int]$userselection2 = Read-Host "Please select from this list [1-$listmax]"
             if ($userselection2 -lt 1 -or $userselection2 -gt $listmax)
             {
@@ -733,21 +765,22 @@ function Start-GCVERecovery ([string]$filename,[int]$phase)
         if ($userselection2 -eq 2) { logingcve }
         if ($userselection2 -eq 3) { importagmslts }  
         if ($userselection2 -eq 4) { importonvaultimages }
-        if ($userselection2 -eq 5) { setfilename }
-        if ($userselection2 -eq 6) { setphase }
-        if ($userselection2 -eq 7) { listimportedimages }
-        if ($userselection2 -eq 8) { createnewvms }
-        if ($userselection2 -eq 9) { monitorjobs }
-        if ($userselection2 -eq 10) { listmounts }
-        if ($userselection2 -eq 11) { listvmwarevms }
-        if ($userselection2 -eq 12) { listphasevmwarevms }
-        if ($userselection2 -eq 13) { configurevmwarevms }
-        if ($userselection2 -eq 14) { migratevms } 
-        if ($userselection2 -eq 15) { unmountyourimages }   
-        if ($userselection2 -eq 16) { deletevms }
-        if ($userselection2 -eq 17) { listvmwaretasks }
-        if ($userselection2 -eq 18) { mainmenu }
-        if ($userselection2 -eq 19) { return }
+        if ($userselection2 -eq 5) { exportdrsidevmwareconfig }
+        if ($userselection2 -eq 6) { setfilename }
+        if ($userselection2 -eq 7) { setphase }
+        if ($userselection2 -eq 8) { listimportedimages }
+        if ($userselection2 -eq 9) { createnewvms }
+        if ($userselection2 -eq 10) { monitorjobs }
+        if ($userselection2 -eq 11) { listmounts }
+        if ($userselection2 -eq 12) { listvmwarevms }
+        if ($userselection2 -eq 13) { listphasevmwarevms }
+        if ($userselection2 -eq 14) { configurevmwarevms }
+        if ($userselection2 -eq 15) { migratevms } 
+        if ($userselection2 -eq 16) { unmountyourimages }   
+        if ($userselection2 -eq 17) { deletevms }
+        if ($userselection2 -eq 18) { listvmwaretasks }
+        if ($userselection2 -eq 19) { mainmenu }
+        if ($userselection2 -eq 20) { return }
 
     }
 
