@@ -77,7 +77,7 @@ If using Actifio you will need the correct syntax as shown in this example. More
 
 The second command is used to confirm you have connected.
 ```
-Connect-agm 10.10.0.3 admin $mysecret -i
+Connect-agm -agmip10.10.0.3 -agmuser admin -agmpassword $mysecret -i
 Get-AGMVersion
 ```
 #### Connect to Management Console
