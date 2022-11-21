@@ -200,7 +200,6 @@ function Start-GCVERecovery ([string]$filename,[int]$phase)
         }
     }
 
-
     function exportdrsidevmwareconfig
     {
         $filename = Read-Host "Please supply a name for the output csv file (xxxx.csv)"
@@ -212,20 +211,21 @@ function Start-GCVERecovery ([string]$filename,[int]$phase)
         else 
         {
             #  sourcevmname,sourcepowerstate,sourcenicname,sourcenetworkname,sourceconnectionstate,sourcemacaddress,sourceipaddress
-            $hostgrab = Get-AGMHost -filtervalue vmtype=vmware
+            $hostgrab = Get-AGMHost -filtervalue "vmtype=vmware&shadow=true" -sort hostname:asc
             if ($hostgrab.id.count -eq 0 )
             {
                 write-host ""
-                Read-Host -Prompt "No hosts were found.  Run an import first"
+                Read-Host -Prompt "No imported VMware type hosts were found.  Run an import first"
                 write-host ""
                 gcveactions
             }
             else
             {
-            Get-AGMHost -filtervalue vmtype=vmware | Select-Object @{N="sourcevmname";E={$_.hostname}},sourcepowerstate,sourcenicname,@{N="sourcenetworkname";E={$_.NetworkName}},@{N="sourceconnectionstate";E={$_.ConnectionState}},@{N="sourcemacaddress";E={$_.MacAddress}},@{N=”sourceipaddress”;E={@($_.ipaddress)}},phase,targetvmname,label,targetnetworkname,poweronvm,targetmacaddress | Export-Csv -path $filename
+            $hostgrab | Select-Object @{N="sourcevmname";E={$_.hostname}},sourcepowerstate,sourcenicname,@{N="sourcenetworkname";E={$_.NetworkName}},@{N="sourceconnectionstate";E={$_.ConnectionState}},@{N="sourcemacaddress";E={$_.MacAddress}},@{N=”sourceipaddress”;E={@($_.ipaddress)}},phase,targetvmname,label,targetnetworkname,poweronvm,targetmacaddress | Export-Csv -path $filename
             }
             write-host ""
-            Read-Host -Prompt "You will need to update the file $filename before moving to the next step"
+            write-host $hostgrab.id.count "VMs were found and exported to file: $filename"
+            Read-Host -Prompt "You will need to update this file before moving to the next step"
             write-host ""
         }
         gcveactions
