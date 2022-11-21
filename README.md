@@ -212,7 +212,7 @@ poweronvm
 onvault
 perfoption
 ```
-Without the CSV file we cannot function, meaning we cannot enter a DR situation and then use this function to a run a failover without it.   We don't want to be creating CSV files during a DR.
+Without the CSV file we cannot function, meaning we cannot enter a DR situation and then use this function to a run a failover without it.   We can create one using the imported VMs on the DR/failover side if necessary. 
 In the CSV file we normally need to configure the following columns:
 
 * phase:  in most scenarios we will start the VMs in phases, which means we run through a phase for each set of recoveries.  Which phase a VM belongs in cannot normally be guessed.  It usually needs the Administrator to have a clear understanding of VM creation order.
