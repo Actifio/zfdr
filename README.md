@@ -1,6 +1,6 @@
 # ZFDR
 
-The purpose of this script is to help users run DR failovers when using Actifio GO and/or Google Cloud Backup and DR to create VMware VM backups and Google Cloud VMware Engine (also refered to as GCVE or VMware Engine) as a DR target for VMware VMs.
+The purpose of this script is to help users automate DR failovers when using Actifio GO and/or Google Cloud Backup and DR to create VMware VM backups and then using Google Cloud VMware Engine (also refered to as GCVE or VMware Engine) as a DR target for VMware VMs.
 
 ### Table of Contents
 **[Video walk through](#video-walk-through)**<br>
@@ -29,11 +29,11 @@ The expected configuration is that the end-user will have one of three topologie
 The goal is to offer a simplified way to manage failover from Production to DR or failback where:
 * The backup mechanism is to place VMware VM backups into Google Cloud Storage (GCS) using OnVault images.
 * These images are created by a Backup Appliance on the Production site and then imported by a Backup Appliance on the DR site.
-* At this time everything is coded on the assumption that each VM name is unique.   This may not be realistic in the real world, but is a good practical suggestion (since duplicate VM names are always confusing)
+* At this time everything is coded on the assumption that each VM name is unique.   
 
 ## Failover and failback
 
-Effectively failover and failback are identical because they are achieved using the same mechanism, so we will only use the term failover.   Where you read failover, failback is performed in exactly the same way.
+Effectively failover and failback are identical because they are achieved using the same mechanism, so we will only use the term failover. Where you read failover, failback is performed in exactly the same way.
 
 ## Installation and setup
 
@@ -67,12 +67,12 @@ Install-Module AGMPowerLib -Scope CurrentUser
 Install-Module VMware.PowerCLI -Scope CurrentUser
 Set-PowerCLIConfiguration -InvalidCertificateAction Ignore -Confirm:$false
 ```
-### Login to AGM and vCenter:
+### Login to AGM (or Management Console) and vCenter:
 Set your password:
 ```
 $mysecret = "password"
 ```
-#### Connect to the AGM.  
+#### Connect to the AGM (Actifio)  
 If using Actifio you will need the correct syntax as shown in this example. More information can be found [here](https://github.com/Actifio/AGMPowerCLI/blob/main/README.md#4--login-to-your-agm---actifio-only)
 
 The second command is used to confirm you have connected.
@@ -80,7 +80,7 @@ The second command is used to confirm you have connected.
 Connect-agm -agmip10.10.0.3 -agmuser admin -agmpassword $mysecret -i
 Get-AGMVersion
 ```
-#### Connect to Management Console
+#### Connect to Management Console (Google Cloud Backup and DR)
 If using Google Cloud Backup and DR you will need the correct syntax as shown in this example.  More information can be found [here](https://github.com/Actifio/AGMPowerCLI/blob/main/GCBDR.md).
 
 The second command is used to confirm you have connected.
