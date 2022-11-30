@@ -1,6 +1,6 @@
 # ZFDR
 
-The purpose of this script is to help users run DR failovers when using Actifio GO to create VMware VM backups and GCVE as a DR target for VMware VMs.
+The purpose of this script is to help users run DR failovers when using Actifio GO and/or Google Cloud Backup and DR to create VMware VM backups and Google Cloud VMware Engine (also refered to as GCVE or VMware Engine) as a DR target for VMware VMs.
 
 ### Table of Contents
 **[Video walk through](#video-walk-through)**<br>
@@ -22,9 +22,9 @@ The expected configuration is that the end-user will have one of three topologie
 
 | Production Site  | DR Site |
 | ------------- | ------------- |
-| On-premises | GCVE  |
-| GCVE | On-premises  |
-| GCVE | GCVE  |
+| On-premises | VMware Engine  |
+| VMware Engine | On-premises  |
+| VMware Engine | GCVE  |
 
 The goal is to offer a simplified way to manage failover from Production to DR or failback where:
 * The backup mechanism is to place VMware VM backups into Google Cloud Storage (GCS) using OnVault images.
