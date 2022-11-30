@@ -127,7 +127,7 @@ Currently there are the following functions.
 
 1. The user creates the CSV file and maintains it.  Particular care is taken to ensure that:
    * The correct phase is set for each VM
-   * That the desired target network is set and that the desired target MAC address is set if needed
+   * That the desired target network is set and that either the source MAC address is restored or a desired target MAC address is set if needed
    * That a meaningful target name is used.   For tests it may be necessary to use a different target name
    * That a useful label is set
 1. The user regularly updates the CSV file to catch any new VMs.
@@ -149,7 +149,7 @@ Currently there are the following functions.
 11: List your mounts        Do you want to list the current mounts in Backup Appliance
 12: List your VMware VMs    Do you want to list the VMs in VMware
 13: List phase VMware VMs   Do you want to list the VMs in VMware created in this phase.  If you get nothing back, have you run option 9 yet?
-14: Set VMware Networking   Do you want to configure VMware VM networking based on a phase number?  This will set network and enable network interface.  I will also change MAC address and power on the VM afterwards.
+14: Set VMware Networking   Do you want to configure VMware VM networking based on a phase number?  This will set network and enable network interface. It will also change MAC address and power on the VM afterwards if this is configured.
 15: MigrateVMs              Do you want to migrate the VMs in the current phase
 16: Unmount your images     Do you want to unmount the VMs we mounted?
 17: Delete VMs              Do you want to DELETE the VMs created in the current phase.  This would be done after finishing a test that included a migrate.
@@ -211,6 +211,7 @@ label
 poweronvm
 onvault
 perfoption
+restoremacaddr
 ```
 Without the CSV file we cannot function, meaning we cannot enter a DR situation and then use this function to a run a failover without it.   We can create one using the imported VMs on the DR/failover side if necessary. 
 In the CSV file we normally need to configure the following columns:
@@ -218,19 +219,20 @@ In the CSV file we normally need to configure the following columns:
 * phase:  in most scenarios we will start the VMs in phases, which means we run through a phase for each set of recoveries.  Which phase a VM belongs in cannot normally be guessed.  It usually needs the Administrator to have a clear understanding of VM creation order.
 * targetvmname.   For some cases this will be the source VM name, but for testing, this may not work.  Please ensure this field is set to remove any risk of confusion.
 * targetnetworkname:  This is the name of the network where we want the VM to be placed.   Note the VM must be powered on to change the network,
-* targetmacaddress:  This is the mac address of the NIC of the new VM.   Leave this blank unless needed.  If set, the VM should always be created in a powered off state since you don't want the VM to 'wake up' and find a new MAC Address.
+* targetmacaddress:  This is the mac address of the NIC of the new VM.   Leave this blank unless needed.  If set, the VM should always be created in a powered off state since you don't want the VM to 'wake up' and find a new MAC Address.  You can also use ```restoremacaddr``` as described later in this list.
 * label:  This does not need to be set, but is used by the backup appliance to find images.   If we set it, we can use it for identification.  
 * poweronvm:  This is the power state of the mounted VM.  If blank, then poweronvm is true.   If the word **false** is in this column, the VM will not be powered on.  
 * onvault:  The value you would normally use here is always *true* indicating you want OnVault images to be used.   If you don't specify anything here then the process will look firstly for snapshots.
 * perfoption:   Valid values here are StorageOptimized, Balanced, PerformanceOptimized or MaximumPerformance.  We recommend StorageOptimized since this will bypass the snapshot pool altogether.   This is best if you are going to use storage vMotion (migration) to move the data onto the VMware datastore, since it means that the data wont be written into the snapshot pool as it is migrated.
+* restoremacaddr:  The only valid value here is **true** which when specified will ensure the new VM has the same MAC Address as the source VM.   For DR failover of Linux VMs this can be hugely helpful as it will prevent the unexpected creation of a new ethernet adapter which will keep the VM off the network.
 
 ## Networking
 By default after creating a new VM, the VM has the following characteristics and consequent considerations:
-* The VM is powered on with a new MAC Address
+* The VM is powered on with a new MAC Address unless you specify **true** in the ```restoremacaddr``` column.
 * The NICs are disconnected. This is done to ensure fixed IP addresses do not result in duplicate IPs on the network.  
 * If the same network as the source exists, the VM will be connected to that network, otherwise it will default to **unknown**
 Potential issues because of this behaviour:
-* The VM NICs will have new MAC addresses.
+* The VM NICs will have new MAC addresses unless you specify **true** in the ```restoremacaddr``` column.
   * For Linux VMs this can be a major issue.  You may have a situation where the existing eth0 no longer works (as it is bound to the old MAC address) and a new eth1 is created which also doesn't work (because the VMs nic is bound to eth0)
   * If DHCP is being used based on MAC address, then IPs will not be allocated
   * If the host is running licensed software, the software may perceive the host has 'changed' and the software will need to be relicensed.
@@ -252,7 +254,7 @@ There can be several scenarios:
   * Set the network
   * Enable the network interface
 
-If we want to retain the same MAC address we need to set this BEFORE the OS boots up.   We do NOT want a situation where the OS starts with a new MAC and then we set the original.   This only makes the situation harder to resolve.
+If we want to change the MAC address we need to do this BEFORE the OS boots up.   We do NOT want a situation where the OS starts with a new MAC and then we set a different one.   This only makes the situation harder to resolve.
 
 ## Post DR failover tasks
 
