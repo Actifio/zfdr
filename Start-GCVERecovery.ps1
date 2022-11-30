@@ -12,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# version 11.0.1.1
+# version 11.0.1.2
+# Date 2022-11-30
 
 function Start-GCVERecovery ([string]$filename,[int]$phase)
 {
@@ -222,7 +223,7 @@ function Start-GCVERecovery ([string]$filename,[int]$phase)
             }
             else
             {
-            $hostgrab | Select-Object @{N="sourcevmname";E={$_.hostname}},sourcepowerstate,sourcenicname,@{N="sourcenetworkname";E={$_.NetworkName}},@{N="sourceconnectionstate";E={$_.ConnectionState}},@{N="sourcemacaddress";E={$_.MacAddress}},@{N=”sourceipaddress”;E={@($_.ipaddress)}},phase,targetvmname,label,targetnetworkname,poweronvm,targetmacaddress | Export-Csv -path $filename
+            $hostgrab | Select-Object @{N="sourcevmname";E={$_.hostname}},sourcepowerstate,sourcenicname,@{N="sourcenetworkname";E={$_.NetworkName}},@{N="sourceconnectionstate";E={$_.ConnectionState}},@{N="sourcemacaddress";E={$_.MacAddress}},@{N=”sourceipaddress”;E={@($_.ipaddress)}},phase,targetvmname,label,targetnetworkname,poweronvm,targetmacaddress,restoremacaddr | Export-Csv -path $filename
             }
             write-host ""
             write-host $hostgrab.id.count "VMs were found and exported to file: $filename"
@@ -439,7 +440,7 @@ function Start-GCVERecovery ([string]$filename,[int]$phase)
         else 
         {
             #  sourcevmname,sourcepowerstate,sourcenicname,sourcenetworkname,sourceconnectionstate,sourcemacaddress,sourceipaddress
-            Get-VM | Get-NetworkAdapter | Select-Object @{N="sourcevmname";E={$_.Parent.Name}},@{N="sourcepowerstate";E={$_.Parent.PowerState}},@{N="sourcenicname";E={$_.Name}},@{N="sourcenetworkname";E={$_.NetworkName}},@{N="sourceconnectionstate";E={$_.ConnectionState}},@{N="sourcemacaddress";E={$_.MacAddress}},@{N=”sourceipaddress”;E={@($_.Parent.guest.IPAddress[0])}},phase,targetvmname,label,targetnetworkname,poweronvm,targetmacaddress | Export-Csv -path $filename
+            Get-VM | Get-NetworkAdapter | Select-Object @{N="sourcevmname";E={$_.Parent.Name}},@{N="sourcepowerstate";E={$_.Parent.PowerState}},@{N="sourcenicname";E={$_.Name}},@{N="sourcenetworkname";E={$_.NetworkName}},@{N="sourceconnectionstate";E={$_.ConnectionState}},@{N="sourcemacaddress";E={$_.MacAddress}},@{N=”sourceipaddress”;E={@($_.Parent.guest.IPAddress[0])}},phase,targetvmname,label,targetnetworkname,poweronvm,targetmacaddress,restoremacaddr | Export-Csv -path $filename
         }
         sourcesideactions
    }
