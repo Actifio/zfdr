@@ -1,4 +1,4 @@
-phase,sourcevmname,targetvmname,label,networkname,onvault,perfoption,restoremacaddr
+phase,sourcevmname,targetvmname,label,targetnetworkname,onvault,perfoption,restoremacaddr
 1,WinSrv2019-2,WinSrv2019-2-rec,phase1,avtest,true,StorageOptimized,true
 1,WinSrv2019-3,WinSrv2019-3-rec,phase1,avtest,true,StorageOptimized,true
 2,Centos1,centos1-rec,phase2,avtest,true,StorageOptimized,true
