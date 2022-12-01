@@ -271,9 +271,9 @@ In a DR test we should do the following:
 1. Now use option 7 to increment to phase 2 and repeat the steps 9,10,13,14 until all phases have run.
 1. Run all the DR tests as needed
 1. If you want to run storage migration then do the following 
-	*. Run Storage migration against each phase by setting the phase with option 7 and then running the migrate with option 15.   Keep running migrates till all VMs are migrated
-	*. When the DR test is over use option 17 to delete the VMware side VMs (unless you are going to just delete the entire VMware Engine environment).
-1. When finished use option 16 to unmount  and delete your VMs using the label you set
+	1. Run Storage migration against each phase by setting the phase with option 7 and then running the migrate with option 15.   Keep running migrates till all VMs are migrated.
+	1. When the DR test is over use option 17 to delete the VMware side VMs (unless you are going to just delete the entire VMware Engine environment).
+4. When finished use option 16 to unmount  and delete your VMs using the label you set
 
 ## Actual DR
 In an actual DR we include a migrate of the VMs to move the data from the NFS Datastore on the backup/recovery appliance to the vSAN Datastore.  The steps are almost the same as a DR test.
