@@ -196,18 +196,17 @@ Having run the mounts and created the VMs we have three scenarios:
 The expectation is that the user will maintain a CSV file that is essentially the heart of the failover operation.
 We can create a CSV from the source side with all the right headings using the export CSV option or we can start by creating a CSV on the source side which will have at least the following headings:
 ```
-sourcevmname
-sourcepowerstate
-sourcenicname
+sourcevmname 
+sourcepowerstate 
+sourcenicname 
 sourceconnectionstate
 sourcemacaddress
 sourceipaddress
 phase
-targetvmname
-label
-targetnetworkname
+targetvmname 
+label 
+targetnetworkname 
 targetmacaddress
-label
 poweronvm
 onvault
 perfoption
@@ -262,12 +261,7 @@ In a DR test we should do the following:
 1. Ensure you are logged into AGM and vCenter (using options 1 and 2)
 1. Import your Source side OnVault images into the DR Appliance if you didn't do so using the GUI (using option 4)
 1. Create a config file to run your DR with.  This is a CSV file that lists all your source VMs and how you want to recover them (using option 5)
-1. Now Exit out and open that config file (recommend using Edit Pad Pro) and set the following values:
-1. For each VM set a phase number starting with 1.  So you might have 5 VMs to be brought up in phase 1,  then another 10 VMs brought up in phase 2, then all remaining VMs in phase 3.  Basically any VM without a phase number will be ignored.  And any phase you don't run will also be ignored.
-1. If you want the recovered VMs to use a different name set a targetvmname
-1. Set the VMware network name where you want to place the VM with targetnetworkname
-1. If you want the VM to use the same MAC Address as the source VM put true in the restoremacaddr column.
-1. Set a label to make unmounting easy.  Use a common label for all VMs or a common label for each phase.
+1. Now Exit out and open that config file (recommend using Edit Pad Pro) and set the required values (at least set a phase).
 1. Start the PowerShell module again( specifying your file):   
 	```Start-GCVERecovery -filename xxxxx```
 1. Run option 9 to create the new VMs.  The phase will default to  1
@@ -277,8 +271,8 @@ In a DR test we should do the following:
 1. Now use option 7 to increment to phase 2 and repeat the steps 9,10,13,14 until all phases have run.
 1. Run all the DR tests as needed
 1. If you want to run storage migration then do the following 
-  *. Run Storage migration against each phase by setting the phase with option 7 and then running the migrate with option 15.   Keep running migrates till all VMs are migrated
-  *. When the DR test is over use option 17 to delete the VMware side VMs (unless you are going to just delete the entire VMware Engine environment).
+*. Run Storage migration against each phase by setting the phase with option 7 and then running the migrate with option 15.   Keep running migrates till all VMs are migrated
+*. When the DR test is over use option 17 to delete the VMware side VMs (unless you are going to just delete the entire VMware Engine environment).
 1. When finished use option 16 to unmount  and delete your VMs using the label you set
 
 ## Actual DR
@@ -286,12 +280,7 @@ In an actual DR we include a migrate of the VMs to move the data from the NFS Da
 1. Ensure you are logged into AGM and vCenter (options 1 and 2)
 1. Import your On Vault images if you didn't do so using the GUI (option 4)
 1. Create a config file to run your DR with (option 5)
-1. Now Exit out and open that config file (recommend Edit Pad Pro) and set the following values:
-1. For each VM set a phase number starting with 1.  So you might have 5 VMs to be brought up in phase 1,  then another 10 VMs brought up in phase, then all remaining VMs in phase 3.
-1. If you want the recovered VMs to use a different name set a targetvmname
-1. Set the network name where you want to place the VM
-1. If you want the VM to use the same MAC Address as the source VM put true in the restoremacaddr column.
-1. Set a label to make unmounting easy.
+1. Now Exit out and open that config file (recommend Edit Pad Pro) and set the required values. At least set a phase.
 1. Run( specifying your file):   ```Start-GCVERecovery -filename xxxxx  ```
 1. Run option 9 to create the new VMs in phase 1
 1. Monitor the mounts with option 10
