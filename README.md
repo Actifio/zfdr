@@ -215,6 +215,12 @@ restoremacaddr
 Without the CSV file we cannot function, meaning we cannot enter a DR situation and then use this function to a run a failover without it.   We can create one using the imported VMs on the DR/failover side if necessary. 
 In the CSV file we normally need to configure the following columns:
 
+* sourcevmname:  you would normally let the export process discover and populate this column.  It is mandatory
+* sourcepowerstate:  only populated if you ran export on the production site.  Use this as a hint whether the VM was ever powered on
+* sourcenicname: only populated if you ran export on the production site.  Use this to help with network configuration
+* sourceconnectionstate: only populated if you ran export on the production site.  Use this to help with network configuration
+* sourcemacaddress: only populated if you ran export on the production site.  Use this to help with network configuration. 
+* sourceipaddress: Use this to help with network configuration. 
 * phase:  in most scenarios we will start the VMs in phases, which means we run through a phase for each set of recoveries.  Which phase a VM belongs in cannot normally be guessed.  It usually needs the Administrator to have a clear understanding of VM creation order.
 * targetvmname.   For some cases this will be the source VM name, but for testing, this may not work.  Please ensure this field is set to remove any risk of confusion.
 * targetnetworkname:  This is the name of the network where we want the VM to be placed.   Note the VM must be powered on to change the network,
