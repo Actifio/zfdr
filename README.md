@@ -1,6 +1,6 @@
 # ZFDR
 
-The purpose of this script is to help users automate DR failovers when using Actifio GO and/or Google Cloud Backup and DR to create VMware VM backups and then using Google Cloud VMware Engine (also refered to as GCVE or VMware Engine) as a DR target for VMware VMs.
+The purpose of this script is to help users automate DR failovers when using Actifio GO and/or Google Cloud Backup and DR to create VMware VM backups and then use those backups as well as Google Cloud VMware Engine (also refered to as GCVE or VMware Engine) as a DR target for VMware VMs.
 
 ### Table of Contents
 **[Video walk through](#video-walk-through)**<br>
@@ -10,6 +10,8 @@ The purpose of this script is to help users automate DR failovers when using Act
 **[Import the Start-GCVERecovery ps1 file](#import-the-start-gcverecovery-ps1-file)**<br>
 **[CSV file](#csv-file)**<br>
 **[Networking](#networking)**<br>
+**[DR Test](#dr-test)**<br>
+**[Actual DR](#actual-dr)**<br>
 **[Post DR failover tasks](#post-dr-failover-tasks)**<br>
 
 ## Video walk through
@@ -68,11 +70,12 @@ Install-Module VMware.PowerCLI -Scope CurrentUser
 Set-PowerCLIConfiguration -InvalidCertificateAction Ignore -Confirm:$false
 ```
 ### Login to AGM (or Management Console) and vCenter:
+
+#### Connect to the AGM (Actifio)  
 Set your password:
 ```
 $mysecret = "password"
 ```
-#### Connect to the AGM (Actifio)  
 If using Actifio you will need the correct syntax as shown in this example. More information can be found [here](https://github.com/Actifio/AGMPowerCLI/blob/main/README.md#4--login-to-your-agm---actifio-only)
 
 The second command is used to confirm you have connected.
