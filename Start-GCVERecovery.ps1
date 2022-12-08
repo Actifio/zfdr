@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# version 11.0.1.2
-# Date 2022-11-30
+# version 11.0.1.3
+# Date 2022-06-08
 
 function Start-GCVERecovery ([string]$filename,[int]$phase)
 {
@@ -740,7 +740,7 @@ function Start-GCVERecovery ([string]$filename,[int]$phase)
         Write-Host "10`: Monitor running jobs    Do you want to monitor running jobs"
         Write-Host "11`: List your mounts        Do you want to list the current mounts"
         Write-Host "12`: List all VMware VMs     Do you want to list the VMs in VMware"
-        Write-Host "13`: List new phase VMs      Do you want to list the VMs in VMware that were created in this phase"
+        Write-Host "13`: List new phase VMs      Do you want to list the VMs in VMware that were created in this phase using targetvmname"
         Write-Host "14`: Set VMware Networking   Do you want to configure VMware VM networking based on a phase number?"
         write-host "15`: Migrate VMs             Do you want to migrate the VMs in the current phase"
         Write-Host "16`: Unmount your images     Do you want to unmount the VMs we mounted?"
