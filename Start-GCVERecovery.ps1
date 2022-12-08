@@ -406,7 +406,7 @@ function Start-GCVERecovery ([string]$filename,[int]$phase)
             # now we enable the interfaces in the desired interface 
             $recoverylist = Import-Csv -Path $filename
             $phasevmlist = ($recoverylist | where-object {$_.phase -eq $phase}).targetvmname
-            if (!($phasevmlist -eq $null)) { $phasevmlist = ($recoverylist | where-object {$_.phase -eq $phase}).sourcevmname }
+            # if (!($phasevmlist -eq $null)) { $phasevmlist = ($recoverylist | where-object {$_.phase -eq $phase}).sourcevmname }
             Get-VM |  Where-object {$_.name -in $phasevmlist} | Get-NetworkAdapter | Select-Object @{N="VM";E={$_.Parent.Name}},@{N="Power";E={$_.Parent.PowerState}},@{N="NIC";E={$_.Name}},@{N="Network";E={$_.NetworkName}},@{N="Connected";E={$_.ConnectionState}},@{N="MacAddress";E={$_.MacAddress}},@{N=”IP Address”;E={@($_.Parent.guest.IPAddress[0])}},@{N="Datastore";E={[string]::Join(',',(Get-Datastore -Id $_.Parent.DatastoreIdList | Select-Object -ExpandProperty Name))}} | Format-Table
             Read-Host -Prompt "Press enter to continue"
             gcveactions
